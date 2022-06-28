@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import ru.yandex.practicum.filmorate.utility.BeforeNow;
+import ru.yandex.practicum.filmorate.utility.NoSpace;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -18,6 +19,7 @@ public class User {
     private final String email;
     @NotNull
     @NotBlank
+    @NoSpace
     private final String login;
 
     private String name;
