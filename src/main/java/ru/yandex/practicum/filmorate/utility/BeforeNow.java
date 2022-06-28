@@ -7,12 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = AfterValidator.class)
+@Constraint(validatedBy = BeforeNowValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface After {
-    String message() default "must be after {value}";
+public @interface BeforeNow {
+    String message() default "must be before present time";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    String value();
 }
