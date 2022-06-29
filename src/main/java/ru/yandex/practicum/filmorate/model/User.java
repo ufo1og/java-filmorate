@@ -1,29 +1,16 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import ru.yandex.practicum.filmorate.utility.BeforeNow;
-import ru.yandex.practicum.filmorate.utility.NoSpace;
+import ru.yandex.practicum.filmorate.utility.ValidUser;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
+@ValidUser
 public class User {
     private int id;
-
-    @NotNull
-    @NotBlank
-    @Email
     private final String email;
-    @NotNull
-    @NotBlank
-    @NoSpace
     private final String login;
-
     private String name;
-    @NotNull
-    @BeforeNow
     private final LocalDate birthday;
 }

@@ -7,11 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = BeforeNowValidator.class)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BeforeNow {
-    String message() default "must be before present time";
+@Constraint(validatedBy = FilmValidator.class)
+public @interface ValidFilm {
+    String message() default "Film not valid";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

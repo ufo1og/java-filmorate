@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -26,10 +25,6 @@ public class FilmController {
 
     @PutMapping
     public Film putFilm(@RequestBody @Valid Film film) {
-        if (film.getId() < 0) {
-            log.debug("Ошибка валидации: Переданный id меньше 0");
-            throw new ValidationException("Film id can't be less than 0");
-        }
         if (films.containsKey(film.getId())) {
             log.debug("Фильм {} изменен на {}", films.get(film.getId()), film);
         }

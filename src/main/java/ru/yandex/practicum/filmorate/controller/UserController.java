@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -32,10 +31,6 @@ public class UserController {
 
     @PutMapping
     public User putUser(@RequestBody @Valid User user) {
-        if (user.getId() < 0) {
-            log.debug("Ошибка валидации: Переданный id меньше 0");
-            throw new ValidationException("User id can't be less than 0");
-        }
         if ("".equals(user.getName())) {
             user.setName(user.getLogin());
         }

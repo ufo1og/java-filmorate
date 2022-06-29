@@ -7,12 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = AfterValidator.class)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface After {
-    String message() default "must be after {value}";
+@Constraint(validatedBy = UserValidator.class)
+public @interface ValidUser {
+    String message() default "User not valid";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    String value();
 }
