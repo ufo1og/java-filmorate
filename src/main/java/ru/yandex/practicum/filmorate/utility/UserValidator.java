@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.utility;
 
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,7 +20,10 @@ public class UserValidator implements ConstraintValidator<ValidUser, User> {
 
     @Override
     public boolean isValid(User user, ConstraintValidatorContext constraintValidatorContext) {
-        boolean isValid = user.getId() >= 0;
+        boolean isValid = true;
+        if (user.getId() < 0) {
+            throw new ValidationException("User id can't be less than 0!");
+        }
         if (user.getEmail() == null || "".equals(user.getEmail()) || !emailValidation(user.getEmail())) {
             isValid = false;
         }

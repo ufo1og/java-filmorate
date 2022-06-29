@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.utility;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -17,7 +18,11 @@ public class FilmValidator implements ConstraintValidator<ValidFilm, Film> {
 
     @Override
     public boolean isValid(Film film, ConstraintValidatorContext constraintValidatorContext) {
-        boolean isValid = film.getId() >= 0;
+
+        boolean isValid = true;
+        if (film.getId() < 0) {
+            throw new ValidationException("Film id can't be less than 0!");
+        }
         if (film.getName() == null || "".equals(film.getName())) {
             isValid = false;
         }
