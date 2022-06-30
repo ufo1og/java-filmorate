@@ -130,7 +130,7 @@ public class FilmControllerTest {
     public void putFilm_JsonWithoutFilmId() throws Exception {
         Film film = new Film("film", "description", LocalDate.now(), 150);
 
-        MvcResult result = getMvcResultWithPostMethod(film);
+        MvcResult result = getMvcResultWithPutMethod(film);
 
         Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
         film.setId(responseFilm.getId());
@@ -142,7 +142,7 @@ public class FilmControllerTest {
         Film film = new Film("film", "description", LocalDate.now(), 150);
         film.setId(1234567890);
 
-        MvcResult result = getMvcResultWithPostMethod(film);
+        MvcResult result = getMvcResultWithPutMethod(film);
 
         Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
         Assertions.assertEquals(film, responseFilm);
@@ -153,14 +153,14 @@ public class FilmControllerTest {
         Film film = new Film("film", "description", LocalDate.now(), 150);
         film.setId(12345);
         // Создали новый фильм с id 12345 и проверили что он создался
-        MvcResult result = getMvcResultWithPostMethod(film);
+        MvcResult result = getMvcResultWithPutMethod(film);
         Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
         Assertions.assertEquals(film, responseFilm);
 
         film = new Film("new film", "new description", LocalDate.now(), 240);
         film.setId(12345);
         // Перезаписываем фильм с id 12345 и проверяем
-        result = getMvcResultWithPostMethod(film);
+        result = getMvcResultWithPutMethod(film);
         responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
         Assertions.assertEquals(film, responseFilm);
     }
@@ -187,7 +187,7 @@ public class FilmControllerTest {
             Film film = new Film("Film" + i, "Desc" + i, LocalDate.now(), 110);
             film.setId(5000 + i);
             films.add(film);
-            getMvcResultWithPostMethod(film);
+            getMvcResultWithPutMethod(film);
         }
 
         MvcResult result = mockMvc.perform(get("/films"))
@@ -199,7 +199,7 @@ public class FilmControllerTest {
         Assertions.assertEquals(films, responseFilms);
     }
 
-    private MvcResult getMvcResultWithPostMethod(Film film) throws Exception {
+    private MvcResult getMvcResultWithPutMethod(Film film) throws Exception {
         return mockMvc.perform(put("/films")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(film)))

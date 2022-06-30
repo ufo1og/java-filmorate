@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping
     public User postUser(@RequestBody @Valid User user) {
-        if ("".equals(user.getName())) {
+        if ("".equals(user.getName()) || user.getName() == null) {
             user.setName(user.getLogin());
         }
         user.setId(id++);
@@ -31,7 +31,7 @@ public class UserController {
 
     @PutMapping
     public User putUser(@RequestBody @Valid User user) {
-        if ("".equals(user.getName())) {
+        if ("".equals(user.getName()) || user.getName() == null) {
             user.setName(user.getLogin());
         }
         if (user.getId() == 0) {
