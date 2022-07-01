@@ -174,8 +174,7 @@ public class FilmControllerTest {
                 .andReturn();
 
         List<Film> responseFilms = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+                new TypeReference<>() {});
         Assertions.assertEquals(Collections.emptyList(), responseFilms);
     }
 
@@ -196,8 +195,7 @@ public class FilmControllerTest {
                 .andReturn();
 
         List<Film> responseFilms = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+                new TypeReference<>() {});
         Assertions.assertEquals(films, responseFilms);
     }
 
