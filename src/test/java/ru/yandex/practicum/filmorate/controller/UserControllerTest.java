@@ -187,8 +187,7 @@ public class UserControllerTest {
                 .andReturn();
 
         List<User> responseUsers = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+                new TypeReference<>() {});
         Assertions.assertEquals(Collections.emptyList(), responseUsers);
     }
 
@@ -210,8 +209,7 @@ public class UserControllerTest {
                 .andReturn();
 
         List<User> responseUsers = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
+                new TypeReference<>() {});
         Assertions.assertEquals(users, responseUsers);
     }
 
