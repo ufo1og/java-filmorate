@@ -29,7 +29,7 @@ public class FilmControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Test
     public void postFilm_Default() throws Exception {
