@@ -1,43 +1,31 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController {
+public class FilmController extends AbstractCommonController<Film, FilmService> {
 
-    private int id = 1;
-    private final Map<Integer, Film> films = new HashMap<>();
-
-    @PostMapping
-    public Film postFilm(@RequestBody @Valid Film film) {
-        film.setId(id++);
-        log.debug("Добавлен фильм: {}", film);
-        films.put(film.getId(), film);
-        return film;
+    public FilmController(FilmService filmService) {
+        super(filmService);
     }
 
-    @PutMapping
-    public Film putFilm(@RequestBody @Valid Film film) {
-        if (films.containsKey(film.getId())) {
-            log.debug("Фильм {} изменен на {}", films.get(film.getId()), film);
-        }
-        if (film.getId() == 0) {
-            film.setId(id++); // Если id не передан в теле запроса - присваиваем свой id
-            log.debug("Добавлен фильм: {}", film);
-        }
-        films.put(film.getId(), film);
-        return film;
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        service.addLike(id, userId);
     }
 
-    @GetMapping
-    public List<Film> getFilms() {
-        return new ArrayList<>(films.values());
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable long id, @PathVariable long userId) {
+        service.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getMostPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        return service.getMostPopularFilms(count);
     }
 }

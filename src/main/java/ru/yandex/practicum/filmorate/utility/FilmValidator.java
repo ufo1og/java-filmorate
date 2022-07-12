@@ -20,9 +20,6 @@ public class FilmValidator implements ConstraintValidator<ValidFilm, Film> {
     public boolean isValid(Film film, ConstraintValidatorContext constraintValidatorContext) {
 
         boolean isValid = true;
-        if (film.getId() < 0) {
-            throw new ValidationException("Film id can't be less than 0!");
-        }
         if (film.getName() == null || "".equals(film.getName())) {
             isValid = false;
         }
