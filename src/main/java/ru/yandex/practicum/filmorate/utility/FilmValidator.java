@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.utility;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utility.exception.ValidationException;
+import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
