@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AbstractCommonStorage<E extends AbstractEntity> implements CommonStorage<E> {
+public abstract class AbstractCommonStorage<E extends AbstractEntity> implements CommonStorage<E> {
     private final Map<Long, E> entities = new HashMap<>();
     private long id = 1L;
 
@@ -38,7 +38,7 @@ public class AbstractCommonStorage<E extends AbstractEntity> implements CommonSt
     }
 
     @Override
-    public E getById(Long id) {
+    public E getById(long id) {
         return entities.get(id);
     }
 
