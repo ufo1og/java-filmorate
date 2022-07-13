@@ -3,10 +3,11 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AbstractCommonStorage<E extends AbstractEntity> implements CommonStorage<E> {
-    private Map<Long, E> entities;
+    private final Map<Long, E> entities = new HashMap<>();
     private long id = 1L;
 
     @Override
@@ -16,12 +17,14 @@ public class AbstractCommonStorage<E extends AbstractEntity> implements CommonSt
             newId = id++; // Подбираем незанятый id
         }
         entity.setId(newId);
-        return entities.put(newId, entity);
+        entities.put(newId, entity);
+        return entity;
     }
 
     @Override
     public E update(E entity) {
-        return entities.put(entity.getId(), entity);
+        entities.put(entity.getId(), entity);
+        return entity;
     }
 
     @Override
