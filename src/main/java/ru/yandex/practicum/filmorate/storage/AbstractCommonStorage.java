@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractCommonStorage<E extends AbstractEntity> implements CommonStorage<E> {
-    private final Map<Long, E> entities = new HashMap<>();
+    protected final Map<Long, E> entities = new HashMap<>();
     private long id = 1L;
 
     @Override

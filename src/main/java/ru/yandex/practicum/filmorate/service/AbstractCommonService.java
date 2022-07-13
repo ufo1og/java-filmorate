@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 import ru.yandex.practicum.filmorate.storage.CommonStorage;
+import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
 
 import java.util.Collection;
 
@@ -23,17 +24,13 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E update(E entity) {
-        if (storage.getById(entity.getId()) == null) {
-            //TODO: ошибка 404
-        }
+        throwExceptionIfEntityNotExist(entity.getId());
         return storage.update(entity);
     }
 
     @Override
     public E delete(long id) {
-        if (storage.getById(id) == null) {
-            //TODO: ошибка 404
-        }
+        throwExceptionIfEntityNotExist(id);
         return storage.delete(id);
     }
 
@@ -44,15 +41,18 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E getById(long id) {
-        E entity = storage.getById(id);
-        if (entity == null) {
-            //TODO: ошибка 404
-        }
-        return entity;
+        throwExceptionIfEntityNotExist(id);
+        return storage.getById(id);
     }
 
     @Override
     public Collection<E> getAll() {
         return storage.getAll();
+    }
+
+    protected void throwExceptionIfEntityNotExist(long id) {
+        if (storage.getById(id) == null) {
+            throw new EntityNotFoundException("Entity with id = " + id + " not found.");
+        }
     }
 }
