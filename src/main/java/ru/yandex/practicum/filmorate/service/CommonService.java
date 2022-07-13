@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public interface CommonService<E extends AbstractEntity> {
     E create(E entity);
