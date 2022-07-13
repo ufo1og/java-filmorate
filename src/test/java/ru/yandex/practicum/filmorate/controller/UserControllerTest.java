@@ -58,7 +58,7 @@ public class UserControllerTest {
     public void postUser_NegativeId() {
         User user = new User("user@mail.ru", "user_login", LocalDate.of(2000, 1, 1));
         user.setName("user_name");
-        user.setId(-1);
+        user.setId(-1L);
 
         NestedServletException e = assertThrows(
                 NestedServletException.class,
@@ -152,7 +152,7 @@ public class UserControllerTest {
     public void putUser_JsonWithUnoccupiedId() throws Exception {
         User user = new User("user@mail.ru", "user_login", LocalDate.of(2000, 1, 1));
         user.setName("user_name");
-        user.setId(1234567890);
+        user.setId(1234567890L);
 
         MvcResult result = getMvcResultWithPutMethod(user);
 
@@ -164,7 +164,7 @@ public class UserControllerTest {
     public void putUser_putUser_JsonWithOccupiedId() throws Exception {
         User user = new User("user@mail.ru", "user_login", LocalDate.of(2000, 1, 1));
         user.setName("user_name");
-        user.setId(12345);
+        user.setId(12345L);
         // Создали нового пользователя с id 12345 и проверили что он создался
         MvcResult result = getMvcResultWithPutMethod(user);
         User responseUser = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
@@ -172,7 +172,7 @@ public class UserControllerTest {
 
         user = new User("newuser@mail.ru", "new_user_login", LocalDate.of(2022, 1, 1));
         user.setName("new_user_name");
-        user.setId(12345);
+        user.setId(12345L);
         // Перезаписываем пользователя с id 12345 и проверяем
         result = getMvcResultWithPutMethod(user);
         responseUser = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
@@ -199,7 +199,7 @@ public class UserControllerTest {
         for (int i = 0; i < 5; i++) {
             User user = new User("user" + i + "@mail.ru", "user_login" + i, LocalDate.of(2000, 1, 1));
             user.setName("user_name" + i);
-            user.setId(5000 + i);
+            user.setId(5000L + i);
             users.add(user);
             getMvcResultWithPutMethod(user);
         }

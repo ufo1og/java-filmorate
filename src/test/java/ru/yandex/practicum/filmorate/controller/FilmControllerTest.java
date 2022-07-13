@@ -55,7 +55,7 @@ public class FilmControllerTest {
     @Test
     public void postFilm_NegativeId() {
         Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(-1);
+        film.setId(-1L);
 
         NestedServletException e = assertThrows(
                 NestedServletException.class,
@@ -140,7 +140,7 @@ public class FilmControllerTest {
     @Test
     public void putFilm_JsonWithUnoccupiedId() throws Exception {
         Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(1234567890);
+        film.setId(1234567890L);
 
         MvcResult result = getMvcResultWithPutMethod(film);
 
@@ -151,14 +151,14 @@ public class FilmControllerTest {
     @Test
     public void putFilm_JsonWithOccupiedId() throws Exception {
         Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(12345);
+        film.setId(12345L);
         // Создали новый фильм с id 12345 и проверили что он создался
         MvcResult result = getMvcResultWithPutMethod(film);
         Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
         Assertions.assertEquals(film, responseFilm);
 
         film = new Film("new film", "new description", LocalDate.now(), 240);
-        film.setId(12345);
+        film.setId(12345L);
         // Перезаписываем фильм с id 12345 и проверяем
         result = getMvcResultWithPutMethod(film);
         responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
@@ -185,7 +185,7 @@ public class FilmControllerTest {
         // Генерируем фильмы и добавляем их через PUT запросы
         for (int i = 0; i < 5; i++) {
             Film film = new Film("Film" + i, "Desc" + i, LocalDate.now(), 110);
-            film.setId(5000 + i);
+            film.setId(5000L + i);
             films.add(film);
             getMvcResultWithPutMethod(film);
         }

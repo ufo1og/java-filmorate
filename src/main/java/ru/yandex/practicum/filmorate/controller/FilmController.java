@@ -12,8 +12,8 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
 
-    private int id = 1;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private Long id = 1L;
+    private final Map<Long, Film> films = new HashMap<>();
 
     @PostMapping
     public Film postFilm(@RequestBody @Valid Film film) {

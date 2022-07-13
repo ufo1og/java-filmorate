@@ -15,8 +15,8 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    private int id = 1;
-    private final Map<Integer, User> users = new HashMap<>();
+    private Long id = 1L;
+    private final Map<Long, User> users = new HashMap<>();
 
     @PostMapping
     public User postUser(@RequestBody @Valid User user) {
