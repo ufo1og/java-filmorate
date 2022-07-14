@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
@@ -35,14 +36,15 @@ public class FilmService extends AbstractCommonService<Film, FilmStorage> {
         storage.getById(filmId).removeLike(userId);
     }
 
-    public List<Film> getMustPopularFilms(long count) {
+    public List<Film> getMostPopularFilms(int count) {
         return storage.getAll().stream()
-                .sorted(Comparator.comparingInt(p -> p.getUserWhoLikesIds().size()))
+                .sorted((o1, o2) -> o2.getUserWhoLikesIds().size() - o1.getUserWhoLikesIds().size())
                 .limit(count).collect(Collectors.toList());
     }
 
     private void throwExceptionIfUserNotExist(long id) {
-        if (userStorage.getById(id) == null) {
+        User user = userStorage.getById(id);
+        if (user == null) {
             throw new EntityNotFoundException("User with id = " + id + "not found.");
         }
     }

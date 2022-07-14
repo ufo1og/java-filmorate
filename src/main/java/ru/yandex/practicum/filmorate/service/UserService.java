@@ -23,6 +23,7 @@ public class UserService extends AbstractCommonService<User, UserStorage> {
 
     @Override
     public User update(User entity) {
+        throwExceptionIfEntityNotExist(entity.getId());
         setNameIfNotExist(entity);
         return super.update(entity);
     }
