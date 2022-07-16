@@ -35,6 +35,7 @@ public abstract class AbstractCommonStorage<E extends AbstractEntity> implements
     @Override
     public void deleteAll() {
         entities.clear();
+        id = 1L;
     }
 
     @Override

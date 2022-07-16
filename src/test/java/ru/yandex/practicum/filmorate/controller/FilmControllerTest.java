@@ -1,216 +1,124 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.NestedServletException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = FilmController.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class FilmControllerTest {
     @Autowired
-    private MockMvc mockMvc;
+    private TestRestTemplate restTemplate;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private FilmStorage storage;
 
-    @Test
-    public void postFilm_Default() throws Exception {
-        Film film = new Film("film", "description", LocalDate.now(), 150);
-        MvcResult result = mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
-        film.setId(responseFilm.getId());
-        Assertions.assertEquals(film, responseFilm);
+    @AfterEach
+    private void clearStorage() {
+        storage.deleteAll();
     }
 
     @Test
-    public void postFilm_EmptyRequestBody() throws Exception {
-        mockMvc.perform(post("/films")
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
+    public void whenCreatedFilm_thenStatus200() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+
+        ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        film.setId(1);
+        Assertions.assertEquals(film, response.getBody());
     }
 
     @Test
-    public void postFilm_NegativeId() {
-        Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(-1L);
-
-        NestedServletException e = assertThrows(
-                NestedServletException.class,
-                () -> mockMvc.perform(post("/films")
-                                .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(film)))
-                        .andExpect(status().is5xxServerError())
-        );
-        String expectedMessage = "Request processing failed; nested exception is javax.validation." +
-                "ValidationException: HV000028: Unexpected exception during isValid call.";
-        Assertions.assertEquals(expectedMessage, e.getMessage());
+    public void whenCreatingNotValid_thenStatus400() {
+        // negative duration
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), -120);
+        ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        // blank name
+        film = new Film("", "description", LocalDate.of(2000, 1, 1), 120);
+        response = restTemplate.postForEntity("/films", film, Film.class);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        // null name
+        film = new Film(null, "description", LocalDate.of(2000, 1, 1), 120);
+        response = restTemplate.postForEntity("/films", film, Film.class);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        // bad releaseDate
+        film = new Film("film", "description", LocalDate.of(1800, 1, 1), 120);
+        response = restTemplate.postForEntity("/films", film, Film.class);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void postFilm_NullName() throws Exception {
-        Film film = new Film(null, "description", LocalDate.now(), 150);
+    public void whenUpdatedFilm_thenStatus200() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+        storage.create(film);
 
-        mvcPerformPostIsBadRequest(film);
+        film = new Film("new_film", "new_description", LocalDate.of(2022, 1, 1), 100);
+        film.setId(1);
+        HttpEntity<Film> entity = new HttpEntity<>(film);
+
+        ResponseEntity<Film> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(film, response.getBody());
     }
 
     @Test
-    public void postFilm_BlankName() throws Exception {
-        Film film = new Film("", "description", LocalDate.now(), 150);
-
-        mvcPerformPostIsBadRequest(film);
+    public void whenUpdatingFilmWithNegativeId_thenStatus404() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+        film.setId(-1);
+        HttpEntity<Film> entity = new HttpEntity<>(film);
+        ResponseEntity<Film> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void postFilm_NullDescription() throws Exception {
-        Film film = new Film("film", null, LocalDate.now(), 150);
-
-        mvcPerformPostIsBadRequest(film);
+    public void whenUpdatingFilmThatNotExist_thenStatus404() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+        film.setId(777);
+        HttpEntity<Film> entity = new HttpEntity<>(film);
+        ResponseEntity<Film> response = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void postFilm_BlankDescription() throws Exception {
-        Film film = new Film("film", "", LocalDate.now(), 150);
-
-        mvcPerformPostIsBadRequest(film);
+    public void whenGetFilms_thenStatus200() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+        storage.create(film);
+        ResponseEntity<List<Film>> response = restTemplate.exchange("/films", HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
+        film.setId(1);
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(List.of(film), response.getBody());
     }
 
     @Test
-    public void postFilm_TooLongDescription() throws Exception {
-        String desc = String.format("start%300s", "end");
-        Film film = new Film("film", desc, LocalDate.now(), 150);
-
-        mvcPerformPostIsBadRequest(film);
+    public void whenGetFilm_thenStatus200() {
+        Film film = new Film("film", "description", LocalDate.of(2000, 1, 1), 120);
+        storage.create(film);
+        film.setId(1);
+        ResponseEntity<Film> response = restTemplate.exchange("/films/{id}", HttpMethod.GET, null, Film.class, 1);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(film, response.getBody());
     }
 
     @Test
-    public void postFilm_NullReleaseDate() throws Exception {
-        Film film = new Film("film", "description", null, 150);
-
-        mvcPerformPostIsBadRequest(film);
-    }
-
-    @Test
-    public void postFilm_VeryOldReleaseDate() throws Exception {
-        Film film = new Film("film", "description", LocalDate.of(1000, 1, 1), 150);
-
-        mvcPerformPostIsBadRequest(film);
-    }
-
-    @Test
-    public void postFilm_NegativeDuration() throws Exception {
-        Film film = new Film("film", "description", LocalDate.now(), -150);
-
-        mvcPerformPostIsBadRequest(film);
-    }
-
-    @Test
-    public void putFilm_JsonWithoutFilmId() throws Exception {
-        Film film = new Film("film", "description", LocalDate.now(), 150);
-
-        MvcResult result = getMvcResultWithPutMethod(film);
-
-        Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
-        film.setId(responseFilm.getId());
-        Assertions.assertEquals(film, responseFilm);
-    }
-
-    @Test
-    public void putFilm_JsonWithUnoccupiedId() throws Exception {
-        Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(1234567890L);
-
-        MvcResult result = getMvcResultWithPutMethod(film);
-
-        Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
-        Assertions.assertEquals(film, responseFilm);
-    }
-
-    @Test
-    public void putFilm_JsonWithOccupiedId() throws Exception {
-        Film film = new Film("film", "description", LocalDate.now(), 150);
-        film.setId(12345L);
-        // Создали новый фильм с id 12345 и проверили что он создался
-        MvcResult result = getMvcResultWithPutMethod(film);
-        Film responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
-        Assertions.assertEquals(film, responseFilm);
-
-        film = new Film("new film", "new description", LocalDate.now(), 240);
-        film.setId(12345L);
-        // Перезаписываем фильм с id 12345 и проверяем
-        result = getMvcResultWithPutMethod(film);
-        responseFilm = objectMapper.readValue(result.getResponse().getContentAsString(), Film.class);
-        Assertions.assertEquals(film, responseFilm);
-    }
-
-    @Test
-    @Order(1)
-    // Важно чтобы тест выполнялся первым, пока не добавлен ни один фильм
-    public void getFilms_NoFilms() throws Exception {
-        MvcResult result = mockMvc.perform(get("/films"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        List<Film> responseFilms = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {});
-        Assertions.assertEquals(Collections.emptyList(), responseFilms);
-    }
-
-    @Test
-    @Order(2)
-    public void getFilms_Default() throws Exception {
-        List<Film> films = new ArrayList<>();
-        // Генерируем фильмы и добавляем их через PUT запросы
-        for (int i = 0; i < 5; i++) {
-            Film film = new Film("Film" + i, "Desc" + i, LocalDate.now(), 110);
-            film.setId(5000L + i);
-            films.add(film);
-            getMvcResultWithPutMethod(film);
-        }
-
-        MvcResult result = mockMvc.perform(get("/films"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        List<Film> responseFilms = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {});
-        Assertions.assertEquals(films, responseFilms);
-    }
-
-    private MvcResult getMvcResultWithPutMethod(Film film) throws Exception {
-        return mockMvc.perform(put("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isOk())
-                .andReturn();
-    }
-
-    private void mvcPerformPostIsBadRequest(Film film) throws Exception {
-        mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isBadRequest());
+    public void whenGetFilmThatNotExist_thenStatus404() {
+        ResponseEntity<Film> response = restTemplate.exchange("/films/{id}", HttpMethod.GET, null, Film.class, 777);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }
