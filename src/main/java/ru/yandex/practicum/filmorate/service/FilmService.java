@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,7 @@ public class FilmService extends AbstractCommonService<Film, FilmStorage> {
     private void throwExceptionIfUserNotExist(long id) {
         User user = userStorage.getById(id);
         if (user == null) {
-            log.debug("User with id = " + id + "not found.");
+            log.debug("User with id = {} not found.", id);
             throw new EntityNotFoundException("User with id = " + id + "not found.");
         }
     }

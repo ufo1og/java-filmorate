@@ -61,7 +61,7 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     protected void throwExceptionIfEntityNotExist(long id) {
         if (storage.getById(id) == null) {
-            log.debug("Entity with id = " + id + " not found.");
+            log.debug("Entity with id = {} not found.", id);
             throw new EntityNotFoundException("Entity with id = " + id + " not found.");
         }
     }
