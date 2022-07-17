@@ -25,14 +25,14 @@ public class AbstractCommonController <E extends AbstractEntity, S extends Commo
     @Override
     public E post(@RequestBody @Valid E entity) {
         E e = service.create(entity);
-        log.debug("Создан {}: {}", e.getClass().getName(), e);
+        log.debug("Created {}: {}", e.getClass().getSimpleName(), e);
         return e;
     }
 
     @Override
     public E put(@RequestBody @Valid E entity) {
         E e = service.update(entity);
-        log.debug("Изменен {}: {}", e.getClass().getName(), e);
+        log.debug("Updated {}: {}", e.getClass().getSimpleName(), e);
         return e;
     }
 

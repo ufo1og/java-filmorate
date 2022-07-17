@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 import ru.yandex.practicum.filmorate.storage.CommonStorage;
@@ -7,6 +8,7 @@ import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
 
 import java.util.Collection;
 
+@Slf4j
 public abstract class AbstractCommonService <E extends AbstractEntity, S extends CommonStorage<E>>
         implements CommonService<E> {
 
@@ -19,23 +21,30 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E create(E entity) {
-        return storage.create(entity);
+        E createdEntity = storage.create(entity);
+        log.debug("Created entity {} in storage: {}", createdEntity.getClass().getSimpleName(), createdEntity);
+        return createdEntity;
     }
 
     @Override
     public E update(E entity) {
         throwExceptionIfEntityNotExist(entity.getId());
-        return storage.update(entity);
+        E updatedEntity = storage.update(entity);
+        log.debug("Updated entity {} in storage: {}", updatedEntity.getClass().getSimpleName(), updatedEntity);
+        return updatedEntity;
     }
 
     @Override
     public E delete(long id) {
         throwExceptionIfEntityNotExist(id);
-        return storage.delete(id);
+        E deletedEntity = storage.delete(id);
+        log.debug("Deleted entity {} from storage: {}", deletedEntity.getClass().getSimpleName(), deletedEntity);
+        return deletedEntity;
     }
 
     @Override
     public void deleteAll() {
+        log.debug("Storage {} cleared", storage.getClass().getSimpleName());
         storage.deleteAll();
     }
 
@@ -52,6 +61,7 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     protected void throwExceptionIfEntityNotExist(long id) {
         if (storage.getById(id) == null) {
+            log.debug("Entity with id = " + id + " not found.");
             throw new EntityNotFoundException("Entity with id = " + id + " not found.");
         }
     }

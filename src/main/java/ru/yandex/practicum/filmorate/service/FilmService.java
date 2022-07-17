@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class FilmService extends AbstractCommonService<Film, FilmStorage> {
     private final UserStorage userStorage;
@@ -27,12 +29,14 @@ public class FilmService extends AbstractCommonService<Film, FilmStorage> {
     public void addLike(long filmId, long userId) {
         throwExceptionIfEntityNotExist(filmId);
         throwExceptionIfUserNotExist(userId);
+        log.debug("Added like from User with id = {} to Film with id = {}", userId, filmId);
         storage.getById(filmId).addLike(userId);
     }
 
     public void removeLike(long filmId, long userId) {
         throwExceptionIfEntityNotExist(filmId);
         throwExceptionIfUserNotExist(userId);
+        log.debug("Removed like from User with id = {} to Film with id = {}", userId, filmId);
         storage.getById(filmId).removeLike(userId);
     }
 
@@ -45,6 +49,7 @@ public class FilmService extends AbstractCommonService<Film, FilmStorage> {
     private void throwExceptionIfUserNotExist(long id) {
         User user = userStorage.getById(id);
         if (user == null) {
+            log.debug("User with id = " + id + "not found.");
             throw new EntityNotFoundException("User with id = " + id + "not found.");
         }
     }

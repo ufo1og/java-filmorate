@@ -1,14 +1,15 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserService extends AbstractCommonService<User, UserStorage> {
     public UserService(@Qualifier("InMemoryUserStorage") UserStorage storage) {
@@ -33,6 +34,7 @@ public class UserService extends AbstractCommonService<User, UserStorage> {
         throwExceptionIfEntityNotExist(friendId);
         User user = storage.getById(userId);
         User friend = storage.getById(friendId);
+        log.debug("Users with id = {} and id = {} are now friends", userId, friendId);
         storage.addFriend(userId, friendId);
         storage.addFriend(friendId, userId);
     }
@@ -42,6 +44,7 @@ public class UserService extends AbstractCommonService<User, UserStorage> {
         throwExceptionIfEntityNotExist(friendId);
         User user = storage.getById(userId);
         User friend = storage.getById(friendId);
+        log.debug("Users with id = {} and id = {} are not friends anymore", userId, friendId);
         storage.removeFriend(userId, friendId);
         storage.removeFriend(friendId, userId);
     }
