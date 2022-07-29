@@ -8,12 +8,11 @@ Template repository for Filmorate project.
 
 ### Список друзей
 Хранение списка друзей реализовано в таблице Friends, в которой использован составной ключ из полей user1_id и user2_id.
-Также в таблице фигурирует поле status_id, отражающее состояние заявки в друзья.
+Также в таблице фигурирует поле status_id, отражающее состояние заявки в друзья. Если заявка была отклонена то запись удаляется их базы данных.
 
 Сосятоние может быть следующим:
 - ACCEPTED (status_id = 1) - если запрос принят;
-- DECLINED (status_id = 2) - если запрос отклонен;
-- UNDER_CONSIDERATION (status_id = 3) - пока по запросу не принято решения.
+- UNDER_CONSIDERATION (status_id = 2) - пока по запросу не принято решения.
 
 #### Пример запроса для получения списка друзей пользователя с id = 1
 ```roomsql
@@ -38,6 +37,17 @@ SELECT film_id,
 FROM Likes
 GROUP BY film_id
 ORDER BY Likes;
+```
+
+#### Пример запроса для получения топ-5 фильмов
+```roomsql
+SELECT f.name,
+       COUNT(l.user_id) AS likes_count
+FROM Film AS f
+JOIN Likes AS l ON f.id = l.film_id
+GROUP BY f.name
+ORDER BY likes_count DESC
+LIMIT 5;
 ```
 
 ### Список жанров фильма
