@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.utility;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utility.exceptions.ValidationException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -30,6 +29,9 @@ public class FilmValidator implements ConstraintValidator<ValidFilm, Film> {
             isValid = false;
         }
         if (film.getDuration() < 0) {
+            isValid = false;
+        }
+        if (film.getMpa() == null) {
             isValid = false;
         }
         return isValid;

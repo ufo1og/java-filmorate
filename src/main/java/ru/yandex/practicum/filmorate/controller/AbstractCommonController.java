@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
@@ -12,15 +12,11 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AbstractCommonController <E extends AbstractEntity, S extends CommonService<E>>
         implements CommonController<E> {
 
     protected final S service;
-
-    @Autowired
-    public AbstractCommonController(S service) {
-        this.service = service;
-    }
 
     @Override
     public E post(@RequestBody @Valid E entity) {

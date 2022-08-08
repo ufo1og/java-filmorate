@@ -1,15 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import ru.yandex.practicum.filmorate.utility.ValidUser;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@RequiredArgsConstructor
+@ToString
 @EqualsAndHashCode(callSuper = true)
 @ValidUser
 public class User extends AbstractEntity {
@@ -21,9 +24,5 @@ public class User extends AbstractEntity {
 
     public void addFriend(long id) {
         friends.add(id);
-    }
-
-    public void removeFriend(long id) {
-        friends.remove(id);
     }
 }

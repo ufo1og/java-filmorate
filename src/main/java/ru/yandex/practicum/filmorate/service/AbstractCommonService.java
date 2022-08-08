@@ -1,23 +1,18 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.model.AbstractEntity;
 import ru.yandex.practicum.filmorate.storage.CommonStorage;
-import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
 
 import java.util.Collection;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class AbstractCommonService <E extends AbstractEntity, S extends CommonStorage<E>>
         implements CommonService<E> {
 
     protected final S storage;
-
-    @Autowired
-    public AbstractCommonService(S storage) {
-        this.storage = storage;
-    }
 
     @Override
     public E create(E entity) {
@@ -28,7 +23,6 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E update(E entity) {
-        throwExceptionIfEntityNotExist(entity.getId());
         E updatedEntity = storage.update(entity);
         log.debug("Updated entity {} in storage: {}", updatedEntity.getClass().getSimpleName(), updatedEntity);
         return updatedEntity;
@@ -36,7 +30,6 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E delete(long id) {
-        throwExceptionIfEntityNotExist(id);
         E deletedEntity = storage.delete(id);
         log.debug("Deleted entity {} from storage: {}", deletedEntity.getClass().getSimpleName(), deletedEntity);
         return deletedEntity;
@@ -50,19 +43,11 @@ public abstract class AbstractCommonService <E extends AbstractEntity, S extends
 
     @Override
     public E getById(long id) {
-        throwExceptionIfEntityNotExist(id);
         return storage.getById(id);
     }
 
     @Override
     public Collection<E> getAll() {
         return storage.getAll();
-    }
-
-    protected void throwExceptionIfEntityNotExist(long id) {
-        if (storage.getById(id) == null) {
-            log.debug("Entity with id = {} not found.", id);
-            throw new EntityNotFoundException("Entity with id = " + id + " not found.");
-        }
     }
 }

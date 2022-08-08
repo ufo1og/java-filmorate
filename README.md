@@ -2,33 +2,33 @@
 Template repository for Filmorate project.
 
 ## Структура и описание базы данных
-![](QuickDBD-DB.png)
+![](DB-scheme.png)
 
 Основные сущности: Film и User представлены соответствующими таблицами в БД, ключем в которых является id.
 
 ### Список друзей
-Хранение списка друзей реализовано в таблице Friends, в которой использован составной ключ из полей user1_id и user2_id.
-Также в таблице фигурирует поле status_id, отражающее состояние заявки в друзья. Если заявка была отклонена то запись удаляется их базы данных.
+Хранение списка друзей реализовано в таблице FRIENDS, в которой использован составной ключ из полей USER-FROM и USER_TO.
+Также в таблице фигурирует поле status, отражающее состояние заявки в друзья.
 
 Сосятоние может быть следующим:
-- ACCEPTED (status_id = 1) - если запрос принят;
-- UNDER_CONSIDERATION (status_id = 2) - пока по запросу не принято решения.
+- CONFIRMED (status = 1) - если запрос принят;
+- UNCONFIRMED (status = 0) - пока по запросу не принято решения.
 
 #### Пример запроса для получения списка друзей пользователя с id = 1
 ```roomsql
-SELECT user2_id AS friends
-FROM Friends
-WHERE user1_id = 1
-      AND status_id = 1
+SELECT user_from AS friends
+FROM friends
+WHERE user_to = 1
+      AND status = 1
 UNION
-SELECT user1_id AS friends
-FROM Friends
-WHERE user2_id = 1
-      AND status_id = 1;
+SELECT user_to AS friends
+FROM friends
+WHERE user_from = 1
+      AND status = 1;
 ```
 
 ### Список лайков фильмов
-Хранение списка лайков реализовано в таблице Likes, где задан составной ключ из полей film_id и user_id.
+Хранение списка лайков реализовано в таблице LIKES, где задан составной ключ из полей FILM_ID и USER_ID.
 
 #### Пример запроса для получения таблицы с id фильма и соотвествующим ему количесвом лайков
 ```roomsql
@@ -51,12 +51,12 @@ LIMIT 5;
 ```
 
 ### Список жанров фильма
-Хранение жанров реализовано в таблице Film_genre, в которой использован составной ключ из полей film_id и genre_id.
+Хранение жанров реализовано в таблице FILMS_GENRES, в которой использован составной ключ из полей FILM_ID и GENRE_ID.
 
 #### Пример запроса для получения списка жанров фильма с id = 1
 ```roomsql
-SELECT g.name AS genre_name
-FROM Film_genre AS fg
-JOIN Genre AS g ON fg.genre_id = g.id
-WHERE fg.film_id = 1;
+SELECT g.genre_id, g.genre_name
+FROM films_genres AS fg
+JOIN genres AS g ON (fg.genre_id = g.genre_id)
+WHERE film_id = 1;
 ```
