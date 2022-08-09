@@ -20,12 +20,12 @@ create table IF NOT EXISTS GENRES
 create unique index IF NOT EXISTS GENRE_NAME_UNIQUE
     on GENRES (GENRE_NAME);
 
-create table IF NOT EXISTS RATINGS
+create table IF NOT EXISTS MPA
 (
-    RATING_ID   INTEGER               not null,
-    RATING_NAME CHARACTER VARYING(10) not null,
+    MPA_ID   INTEGER               not null,
+    MPA_NAME CHARACTER VARYING(10) not null,
     constraint RATING_ID_PK
-        primary key (RATING_ID)
+        primary key (MPA_ID)
 );
 
 create table IF NOT EXISTS FILMS
@@ -35,11 +35,11 @@ create table IF NOT EXISTS FILMS
     DESCRIPTION  CHARACTER LARGE OBJECT,
     RELEASE_DATE DATE                   not null,
     DURATION     INTEGER                not null,
-    RATING_ID    INTEGER                not null,
+    MPA_ID    INTEGER                not null,
     constraint FILM_ID_PK
         primary key (FILM_ID),
     constraint RATING_ID_FK
-        foreign key (RATING_ID) references RATINGS
+        foreign key (MPA_ID) references MPA
 );
 
 create table IF NOT EXISTS FILMS_GENRES
@@ -55,7 +55,7 @@ create table IF NOT EXISTS FILMS_GENRES
 );
 
 create unique index IF NOT EXISTS RATING_NAME_UNIQUE
-    on RATINGS (RATING_NAME);
+    on MPA (MPA_NAME);
 
 create table IF NOT EXISTS USERS
 (

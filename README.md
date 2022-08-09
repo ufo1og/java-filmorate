@@ -11,20 +11,20 @@ Template repository for Filmorate project.
 Также в таблице фигурирует поле status, отражающее состояние заявки в друзья.
 
 Сосятоние может быть следующим:
-- CONFIRMED - если запрос принят;
-- UNCONFIRMED - пока по запросу не принято решения.
+- CONFIRMED (status = 1) - если запрос принят;
+- UNCONFIRMED (status = 0) - пока по запросу не принято решения.
 
 #### Пример запроса для получения списка друзей пользователя с id = 1
 ```roomsql
 SELECT user_from AS friends
 FROM friends
 WHERE user_to = 1
-      AND status = 'CONFIRMED'
+      AND status = 1
 UNION
 SELECT user_to AS friends
 FROM friends
 WHERE user_from = 1
-      AND status = 'CONFIRMED';
+      AND status = 1;
 ```
 
 ### Список лайков фильмов

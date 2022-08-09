@@ -1,8 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
+@EqualsAndHashCode
 public abstract class AbstractEntity {
     private long id;
+
+    public AbstractEntity() {
+    }
 }
