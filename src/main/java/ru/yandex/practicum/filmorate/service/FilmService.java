@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikesStorage;
 
@@ -35,5 +37,21 @@ public class FilmService extends AbstractCommonService<Film, FilmStorage> {
 
     public List<Film> getMostPopularFilms(int count) {
         return likesStorage.getMostPopularFilms(count);
+    }
+
+    public List<Genre> getAllGenres() {
+        return storage.getAllGenres();
+    }
+
+    public Genre getGenre(int id) {
+        return storage.getGenre(id);
+    }
+
+    public List<Mpa> getAllMpas() {
+        return storage.getAllMpas();
+    }
+
+    public Mpa getMpa(int id) {
+        return storage.getMpa(id);
     }
 }

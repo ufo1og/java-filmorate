@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.utility.ValidFilm;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @RequiredArgsConstructor
 @SuperBuilder
@@ -19,7 +21,7 @@ public class Film extends AbstractEntity {
     private final LocalDate releaseDate;
     private final long duration;
     private final Mpa mpa;
-    private final Collection<Genre> genres = new ArrayList<>();
+    private final Set<Genre> genres = new HashSet<>();
 
     public void addGenre(Genre genre) {
         genres.add(genre);

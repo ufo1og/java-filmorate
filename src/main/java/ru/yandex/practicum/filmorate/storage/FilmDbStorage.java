@@ -113,6 +113,46 @@ public class FilmDbStorage extends AbstractCommonStorage<Film> implements FilmSt
         return films;
     }
 
+    @Override
+    public List<Genre> getAllGenres() {
+        String sqlQuery = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNun) -> new Genre(rs.getInt("genre_id"), rs.getString("genre_name")));
+    }
+
+    @Override
+    public Genre getGenre(int id) {
+        String sqlQuery = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
+
+        List<Genre> genres = jdbcTemplate.query(sqlQuery,
+                (rs, rowNun) -> new Genre(rs.getInt("genre_id"), rs.getString("genre_name")), id);
+        if (genres.size() == 0) {
+            throw new EntityNotFoundException(String.format("Genre with id = '%s' not found.", id));
+        }
+        return genres.get(0);
+    }
+
+    @Override
+    public List<Mpa> getAllMpas() {
+        String sqlQuery = "SELECT mpa_id, mpa_name FROM mpa ORDER BY mpa_id";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")));
+    }
+
+    @Override
+    public Mpa getMpa(int id) {
+        String sqlQuery = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = ?";
+
+        List<Mpa> mpas = jdbcTemplate.query(sqlQuery,
+                (rs, rowNun) -> new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")), id);
+        if (mpas.size() == 0) {
+            throw new EntityNotFoundException(String.format("Mpa with id = '%s' not found.", id));
+        }
+        return mpas.get(0);
+    }
+
     private void loadFilmsMpa(List<Film> films) {
         String sqlQuery = "SELECT m.mpa_name FROM mpa as m" +
                 " JOIN films f on m.mpa_id = f.mpa_id AND f.film_id = ?";
@@ -122,7 +162,7 @@ public class FilmDbStorage extends AbstractCommonStorage<Film> implements FilmSt
                         (rs, rowNum) -> rs.getString("mpa_name"), f.getId()).get(0)));
     }
 
-    void loadFilmsGenres(List<Film> films) {
+    private void loadFilmsGenres(List<Film> films) {
         List<Long> ids = films.stream().map(Film::getId).collect(Collectors.toList());
         String params = ids.stream().map(Object::toString).collect(Collectors.joining(", "));
         String sqlQuery = String.format("SELECT fg.film_id, g.genre_id, g.genre_name FROM genres AS g" +
@@ -144,7 +184,7 @@ public class FilmDbStorage extends AbstractCommonStorage<Film> implements FilmSt
         }
     }
 
-    void setFilmsGenres(List<Film> films) {
+    private void setFilmsGenres(List<Film> films) {
         List<Long> ids = films.stream().map(Film::getId).collect(Collectors.toList());
         String params = ids.stream().map(Object::toString).collect(Collectors.joining(", "));
         final String sqlQueryForDelete = String.format("DELETE FROM films_genres WHERE film_id IN (%s)", params);
@@ -154,7 +194,7 @@ public class FilmDbStorage extends AbstractCommonStorage<Film> implements FilmSt
             if (!film.getGenres().isEmpty()) {
                 values.add(film.getGenres().stream()
                         .map(g -> String.format("(%s, %s)", film.getId(), g.getId()))
-                        .collect(Collectors.joining(", ")));
+                        .distinct().collect(Collectors.joining(", ")));
             }
         }
         if (!values.isEmpty()) {
