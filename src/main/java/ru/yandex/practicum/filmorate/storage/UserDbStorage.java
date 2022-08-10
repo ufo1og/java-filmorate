@@ -48,6 +48,7 @@ public class UserDbStorage extends AbstractCommonStorage<User> implements UserSt
             }
             return stmt;
         }, keyHolder);
+
         entity.setId(keyHolder.getKey().longValue());
         return entity;
     }
@@ -61,9 +62,13 @@ public class UserDbStorage extends AbstractCommonStorage<User> implements UserSt
                 " birthday = ?" +
                 " WHERE user_id = ?";
 
-        if (jdbcTemplate.update(sqlQuery, entity.getEmail(), entity.getLogin(), entity.getName(), entity.getBirthday(),
+        if (jdbcTemplate.update(sqlQuery,
+                entity.getEmail(),
+                entity.getLogin(),
+                entity.getName(),
+                entity.getBirthday(),
                 entity.getId()) == 0) {
-            throw new EntityNotFoundException("User not found.");
+            throw new EntityNotFoundException(String.format("User with id = '%s' not found.", entity.getId()));
         }
 
         return entity;
@@ -89,7 +94,7 @@ public class UserDbStorage extends AbstractCommonStorage<User> implements UserSt
 
         List<User> queryResult = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> buildUserFromResultSet(rs), id);
         if (queryResult.size() == 0) {
-            throw new EntityNotFoundException("User with id = '" + id + "' not found.");
+            throw new EntityNotFoundException(String.format("User with id = '%s' not found.", id));
         }
         User user = queryResult.get(0);
         for (long i : friendsStorage.getUserFriends(id)) {

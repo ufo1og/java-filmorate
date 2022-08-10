@@ -57,16 +57,20 @@ public class FriendsDbStorage implements FriendsStorage {
 
         try {
             jdbcTemplate.update(sqlQuery, userId, friendId, status);
-        }
-        catch (DataIntegrityViolationException e) {
-            throw new EntityNotFoundException("User not found.");
+        } catch (DataIntegrityViolationException e) {
+            throw new EntityNotFoundException(
+                    String.format("User with id = '%s' of id = '%s' not found.", userId, friendId));
         }
     }
 
     @Override
     public void removeFriend(long userId, long friendId) {
         String sqlQuery = "DELETE FROM friends WHERE user_from = ? AND user_to = ?";
-
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+        try {
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+        } catch (DataIntegrityViolationException e) {
+            throw new EntityNotFoundException(
+                    String.format("User with id = '%s' of id = '%s' not found.", userId, friendId));
+        }
     }
 }
