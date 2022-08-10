@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.FriendsDao;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utility.exceptions.EntityNotFoundException;
 
@@ -18,12 +17,12 @@ import java.util.List;
 
 @Repository("UserDbStorage")
 public class UserDbStorage extends AbstractCommonStorage<User> implements UserStorage {
-    private final FriendsDao friendsDao;
+    private final FriendsStorage friendsStorage;
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendsDao friendsDao) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendsStorage friendsStorage) {
         super(jdbcTemplate);
-        this.friendsDao = friendsDao;
+        this.friendsStorage = friendsStorage;
     }
 
     @Override
@@ -93,7 +92,7 @@ public class UserDbStorage extends AbstractCommonStorage<User> implements UserSt
             throw new EntityNotFoundException("User with id = '" + id + "' not found.");
         }
         User user = queryResult.get(0);
-        for (long i : friendsDao.getUserFriends(id)) {
+        for (long i : friendsStorage.getUserFriends(id)) {
             user.addFriend(i);
         }
         return user;
