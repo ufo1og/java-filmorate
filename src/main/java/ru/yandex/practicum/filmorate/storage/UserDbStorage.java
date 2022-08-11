@@ -36,8 +36,10 @@ public class UserDbStorage extends AbstractCommonStorage<User> implements UserSt
             stmt.setString(1, entity.getEmail());
             stmt.setString(2, entity.getLogin());
             final String name = entity.getName();
-            if (name.isBlank() || name == null) {
+            if (name == null) {
                 entity.setName(entity.getLogin()); // Если имя не задано то в поле имя заносится логин
+            } else if (name.isBlank()) {
+                entity.setName(entity.getLogin());
             }
             stmt.setString(3, entity.getName());
             final LocalDate birthday = entity.getBirthday();
