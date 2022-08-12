@@ -25,7 +25,7 @@ public class FriendsDbStorage implements FriendsStorage {
                 " UNION" +
                 " SELECT user_to AS friend" +
                 " FROM friends" +
-                " WHERE user_from = ?1"; // AND status_id = 1
+                " WHERE user_from = ?1";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> rs.getLong("friend"), userId);
     }
@@ -40,7 +40,7 @@ public class FriendsDbStorage implements FriendsStorage {
                 " UNION ALL" +
                 " SELECT user_to as friend" +
                 " FROM friends" +
-                " WHERE user_from IN (?1, ?2))" + //  AND status_id = 1
+                " WHERE user_from IN (?1, ?2))" +
                 " SELECT friend" +
                 " FROM user_friends" +
                 " GROUP BY friend" +

@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@ToString
 @EqualsAndHashCode
 public abstract class AbstractEntity {
     private long id;
